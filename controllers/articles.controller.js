@@ -46,7 +46,23 @@ const createArticle = async (req, res) => {
         return res.status(400).send(errors)
     }
 
-    const article = new Article(req.body);
+    const articleData = {
+        ...req.body,
+        author: {
+            firstName: req.author.firstName,
+            lastName: req.author.lastName,
+            username: req.author.username,
+            id: req.author.id
+        },
+        createdTime: new Date().toISOString(), // Automatically set the creation time
+    };
+
+    console.log(
+        "\n\n\n========Article Data========\n\n\n",
+        articleData
+    )
+
+    const article = new Article(articleData);
     await article.save();
 
     res.status(201).send({

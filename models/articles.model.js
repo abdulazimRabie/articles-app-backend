@@ -14,13 +14,21 @@ const ArticleSchema = new mongoose.Schema({
         required: true,
     },
     author: {
-        name: {
+        firstName: {
+            type: String,
+            required: true,
+        },
+        lastName: {
             type: String,
             required: true,
         },
         id: {
-            type: Number,
+            type: String,
             required: true,
+        },
+        username: {
+            type: String,
+            required: true
         },
         image: {
             type: String, // Typically a URL or file path
