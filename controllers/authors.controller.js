@@ -1,5 +1,6 @@
 const { validationResult } = require("express-validator");
 const httpStatusText = require("../utils/httpsStatusText");
+const bcrypt = require("bcryptjs");
 let Author = require("../models/authors.model");
 
 // get all users
@@ -22,17 +23,32 @@ const getAllAuthors = async (req, res) => {
 }
 
 const register = async (req, res) => {
-    const author = new Author(req.body);
-    const userHasBenCreated = Author.find({username: req.body.username})
-    if(!userHasBenCreated) {
+    try {
+        const existingUser = await Author.findOne({username: req.body.username})
+    
+        if(existingUser) {
+            return res.status(400).json({msg: "duplicated username or email"})
+        }
+    
+        // password hasing
+        const password = await bcrypt.hash(req.body.password, 10);
+    
+        const author = new Author({
+            ...req.body,
+            password
+        });
         await author.save();
     
         return res.status(201).json({
             status: httpStatusText.SUCCESS, 
             data:{author}}
         );
+    } catch (error) {
+        return res.status(400).json({
+            status: Error,
+            message: "Internal Server Error"
+        })
     }
-    return res.status(400).json({msg: "duplicated username or email"})
 }
 
 const login = () => {}
